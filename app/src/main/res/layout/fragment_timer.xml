@@ -37,7 +37,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/notificationTV"
+        android:id="@+id/notificationTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -50,7 +50,7 @@
         tools:text="XXX Phase!\nPour in Xg amount of water." />
 
     <TextView
-        android:id="@+id/savedTimeTV"
+        android:id="@+id/timerTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
