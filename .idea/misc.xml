@@ -5,8 +5,13 @@
       <map>
         <entry key="app/src/main/res/layout-h720dp/view_recipe_item.xml" value="0.18262411347517732" />
         <entry key="app/src/main/res/layout-w600dp/fragment_generate_recipe.xml" value="0.6233974358974359" />
+        <entry key="app/src/main/res/layout-w600dp/fragment_timer.xml" value="0.6850961538461539" />
         <entry key="app/src/main/res/layout-w720dp/fragment_generate_recipe.xml" value="0.31790123456790126" />
-        <entry key="app/src/main/res/layout/fragment_timer.xml" value="0.32395833333333335" />
+        <entry key="app/src/main/res/layout-w720dp/fragment_timer.xml" value="0.18489583333333334" />
+        <entry key="app/src/main/res/layout/activity_home.xml" value="0.7836134453781513" />
+        <entry key="app/src/main/res/layout/activity_timer.xml" value="0.7836134453781513" />
+        <entry key="app/src/main/res/layout/fragment_timer.xml" value="0.22323303222656254" />
+        <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="1.5147058823529411" />
         <entry key="app/src/main/res/menu/history_toolbar_menu.xml" value="0.2574074074074074" />
       </map>
     </option>
