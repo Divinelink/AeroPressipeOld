@@ -8,10 +8,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import aeropresscipe.divinelink.aeropress.generaterecipe.DiceUI;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -47,7 +47,6 @@ public class TimerFragment extends Fragment implements TimerView {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         View v = inflater.inflate(R.layout.fragment_timer, container, false);
 
@@ -90,10 +89,6 @@ public class TimerFragment extends Fragment implements TimerView {
         return v;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     public static TimerFragment newInstance(DiceUI diceUI) {
 
@@ -132,7 +127,7 @@ public class TimerFragment extends Fragment implements TimerView {
                 .start();
     }
 
-    Handler timerHandler = new Handler();
+    Handler timerHandler = new Handler(Looper.getMainLooper());
     Runnable bloomRunnable = new Runnable() {
         @Override
         public void run() {
