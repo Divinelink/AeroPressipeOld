@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +20,7 @@ import android.widget.Toast;
 
 import aeropresscipe.divinelink.aeropress.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link GenerateRecipeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class GenerateRecipeFragment extends Fragment implements GenerateRecipeView {
-
 
     RecyclerView recipeRv;
     LinearLayout generateRecipeButton, timerButton;
@@ -148,7 +143,7 @@ public class GenerateRecipeFragment extends Fragment implements GenerateRecipeVi
                     mAdapterAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.adapter_anim);
                     recipeRv.startAnimation(mAdapterAnimation);
                     // We need this so the adapter changes during the animation phase, and not before it.
-                    Handler adapterHandler = new Handler();
+                    Handler adapterHandler = new Handler(Looper.getMainLooper());
                     Runnable adapterRunnable = new Runnable() {
                         @Override
                         public void run() {
@@ -178,7 +173,6 @@ public class GenerateRecipeFragment extends Fragment implements GenerateRecipeVi
                 @Override
                 public void run() {
                     recipeRv.setAdapter(recipeRvAdapter);
-                    //         mFadeInAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.initiliaze_animation);
                     if (mFadeInAnimation == null)
                         mFadeInAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.initiliaze_animation);
                     resumeBrewBtn.startAnimation(mFadeInAnimation);

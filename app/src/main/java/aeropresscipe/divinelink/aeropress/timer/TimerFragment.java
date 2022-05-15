@@ -50,7 +50,7 @@ public class TimerFragment extends Fragment implements TimerView {
 
         View v = inflater.inflate(R.layout.fragment_timer, container, false);
 
-        diceUI = getArguments().getParcelable("timer");
+        diceUI = (DiceUI) getArguments().getSerializable("timer");
 
         timerTextView = (TextView) v.findViewById(R.id.savedTimeTV);
         progressBar = (MaterialProgressBar) v.findViewById(R.id.progressBar);
@@ -58,29 +58,21 @@ public class TimerFragment extends Fragment implements TimerView {
         likeRecipeBtn = (ImageButton) v.findViewById(R.id.likeRecipeButton);
         mLikeRecipeLayout = (LinearLayout) v.findViewById(R.id.likeRecipeLayout);
 
-        likeRecipeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.saveLikedRecipeOnDB(getContext());
-            }
-        });
+        likeRecipeBtn.setOnClickListener(view -> presenter.saveLikedRecipeOnDB(getContext()));
 
         //FIXME move it somewhere else
-        likeRecipeBtn.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    AnimatorSet reducer = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.reduce_size);
-                    reducer.setTarget(view);
-                    reducer.start();
+        likeRecipeBtn.setOnTouchListener((view, motionEvent) -> {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                AnimatorSet reducer = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.reduce_size);
+                reducer.setTarget(view);
+                reducer.start();
 
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    AnimatorSet regainer = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.regain_size);
-                    regainer.setTarget(view);
-                    regainer.start();
-                }
-                return false;
+            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                AnimatorSet regainer = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.regain_size);
+                regainer.setTarget(view);
+                regainer.start();
             }
+            return false;
         });
 
 
@@ -94,7 +86,7 @@ public class TimerFragment extends Fragment implements TimerView {
 
         TimerFragment fragment = new TimerFragment();
         Bundle args = new Bundle();
-        args.putParcelable("timer", diceUI);
+        args.putSerializable("timer", diceUI);
         fragment.setArguments(args);
         return fragment;
     }
@@ -234,15 +226,11 @@ public class TimerFragment extends Fragment implements TimerView {
     public void addToLiked(final boolean isLiked) {
 
         if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (isLiked)
-                        likeRecipeBtn.setImageResource(R.drawable.ic_heart_on);
-                    else
-                        likeRecipeBtn.setImageResource(R.drawable.ic_heart_off);
-                }
+            getActivity().runOnUiThread(() -> {
+                if (isLiked)
+                    likeRecipeBtn.setImageResource(R.drawable.ic_heart_on);
+                else
+                    likeRecipeBtn.setImageResource(R.drawable.ic_heart_off);
             });
         }
     }

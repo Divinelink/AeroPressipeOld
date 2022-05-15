@@ -56,12 +56,7 @@ public class HistoryFragment extends Fragment implements IHistoryView, ISharedPr
         mToolBar.setOnMenuItemClickListener(toolbarMenuClickListener);
         mEmptyListLL = (LinearLayout) v.findViewById(R.id.emptyListLayout);
 
-        mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().onBackPressed();
-            }
-        });
+        mToolBar.setNavigationOnClickListener(v1 -> getActivity().onBackPressed());
 
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -106,16 +101,13 @@ public class HistoryFragment extends Fragment implements IHistoryView, ISharedPr
     public void showEmptyListMessage() {
 
         if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+            getActivity().runOnUiThread(() -> {
 
-                    beginFading(historyRecipesRV, AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out_favourites), 8);
-                    mHistoryTV.setVisibility(View.GONE);
-                    beginFading(mEmptyListLL, AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in_favourites), 0);
-                    setIsHistoryEmptyBool(getContext(), true);
+                beginFading(historyRecipesRV, AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out_favourites), 8);
+                mHistoryTV.setVisibility(View.GONE);
+                beginFading(mEmptyListLL, AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in_favourites), 0);
+                setIsHistoryEmptyBool(getContext(), true);
 
-                }
             });
         }
     }
@@ -130,13 +122,10 @@ public class HistoryFragment extends Fragment implements IHistoryView, ISharedPr
     public void passData(final int bloomTime, final int brewTime, final int bloomWater,
                          final int brewWater) {
         if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    DiceUI diceUI = new DiceUI(bloomTime, brewTime, bloomWater, brewWater);
-                    diceUI.setNewRecipe(true);
-                    homeView.startTimerActivity(diceUI);
-                }
+            getActivity().runOnUiThread(() -> {
+                DiceUI diceUI = new DiceUI(bloomTime, brewTime, bloomWater, brewWater);
+                diceUI.setNewRecipe(true);
+                homeView.startTimerActivity(diceUI);
             });
         }
     }
@@ -164,16 +153,8 @@ public class HistoryFragment extends Fragment implements IHistoryView, ISharedPr
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.action_delete)
                 .setMessage(R.string.deleteHistoryMessage)
-                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        presenter.clearHistory(getContext());
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
+                .setPositiveButton(R.string.delete, (dialogInterface, i) -> presenter.clearHistory(getContext()))
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
                 })
                 .show();
     }
@@ -190,12 +171,7 @@ public class HistoryFragment extends Fragment implements IHistoryView, ISharedPr
     public void setRecipeLiked(final boolean isLiked, final Integer pos) {
 
         if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    historyRecipesRV.getAdapter().notifyItemChanged(pos, isLiked);
-                }
-            });
+            getActivity().runOnUiThread(() -> historyRecipesRV.getAdapter().notifyItemChanged(pos, isLiked));
         }
 
     }
