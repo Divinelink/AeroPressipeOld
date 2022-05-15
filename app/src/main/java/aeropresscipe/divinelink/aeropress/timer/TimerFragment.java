@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import aeropresscipe.divinelink.aeropress.base.BaseApplication;
 import aeropresscipe.divinelink.aeropress.generaterecipe.DiceUI;
 
 import androidx.fragment.app.Fragment;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -146,10 +148,7 @@ public class TimerFragment extends Fragment implements TimerView {
         } else {
             // When leaving Timer and it is over, set isBrewing boolean to false, meaning that brewing process is over
             // which removes the resume button on Generate Recipe Fragment.
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean("isBrewing", false);
-            editor.apply();
+            BaseApplication.sharedPreferences.setBrewing(false);
         }
     }
 
