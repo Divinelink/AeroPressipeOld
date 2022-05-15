@@ -18,8 +18,15 @@ android {
         }
     }
 
-    viewBinding {
-        enabled true
+    buildFeatures {
+        viewBinding true
+    }
+
+    android {
+        compileOptions {
+            sourceCompatibility 1.8
+            targetCompatibility 1.8
+        }
     }
 }
 
