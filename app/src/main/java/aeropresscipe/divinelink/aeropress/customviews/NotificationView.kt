@@ -1,27 +1,27 @@
 package aeropresscipe.divinelink.aeropress.customviews
 
-import aeropresscipe.divinelink.aeropress.R
 import aeropresscipe.divinelink.aeropress.databinding.ViewNotificationBinding
+import android.app.Activity
 import android.content.Context
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
-import android.util.Size
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.PopupWindow
-import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 enum class NotificationLength(val delay: Long) {
-    SHORT(1500L),
-    LONG(3000L)
+    SHORT(3000L),
+    LONG(5000L)
 }
+
+//var myHandler = Handler(Looper.getMainLooper())
 
 class NotificationView : FrameLayout {
     private var binding = ViewNotificationBinding.inflate(LayoutInflater.from(context), this, false)
+
+    private var executor = Executors.newSingleThreadScheduledExecutor()
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -35,60 +35,29 @@ class NotificationView : FrameLayout {
     }
 
     private fun initUI() {
-        binding.root.setOnClickListener {
-            binding.root.visibility = View.GONE
+        binding.notificationRoot.setOnClickListener {
+            executor.shutdownNow()
+            binding.notificationRoot.visibility = View.GONE
         }
     }
 
-    fun showNotification(length: NotificationLength) {
-        binding.root.visibility = View.VISIBLE
+    fun showNotification(@StringRes resId: Int, length: NotificationLength) {
+        executor.shutdownNow()
+        executor = Executors.newSingleThreadScheduledExecutor()
 
-        when (length) {
-            NotificationLength.SHORT -> Handler(Looper.getMainLooper()).postDelayed(hideRunnable(), length.delay)
-            NotificationLength.LONG -> Handler(Looper.getMainLooper()).postDelayed(hideRunnable(), length.delay)
-        }
+        binding.notificationRoot.visibility = View.VISIBLE
+        binding.notificationText.text = context.getText(resId)
+        executor.schedule(hideRunnable(), length.delay, TimeUnit.MILLISECONDS)
     }
 
     private fun hideRunnable() = Runnable {
-        binding.root.visibility = View.GONE
+        binding.notificationRoot.visibility = View.GONE
     }
 
-    fun setNotificationText(text: String) {
-        binding.notificationText.text = text
-    }
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun showPopupWindow(anchor: View) {
-        PopupWindow(anchor.context).apply {
-            isOutsideTouchable = true
-            val inflater = LayoutInflater.from(anchor.context)
-            contentView = inflater.inflate(R.layout.popup_layout, null).apply {
-                measure(
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-                )
-            }
-        }.also { popupWindow ->
-            // Absolute location of the anchor view
-            val location = IntArray(2).apply {
-                anchor.getLocationOnScreen(this)
-            }
-            val size = Size(
-                popupWindow.contentView.measuredWidth,
-                popupWindow.contentView.measuredHeight
-            )
-            popupWindow.showAtLocation(
-                anchor,
-                Gravity.TOP or Gravity.START,
-                location[0] - (size.width - anchor.width) / 2,
-                location[1] - size.height
-            )
-        }
-    }
 
 
     companion object {
-        private const val SHORT_DELAY = 1500L
-        private const val LONG_DELAY = 3000L
+        private const val SHORT_DELAY = 3000L
+        private const val LONG_DELAY = 5000L
     }
 }

@@ -16,14 +16,15 @@
         app:layout_constraintBottom_toTopOf="@+id/buttonslayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
         <Button
             android:id="@+id/resumeBrewButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
             android:text="@string/resume_brew"
             android:visibility="invisible"
-            android:layout_marginBottom="5dp"
             app:layout_constraintTop_toTopOf="@+id/guidelineButtons"
             tools:visibility="visible" />
     </LinearLayout>
@@ -59,8 +60,8 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:textAlignment="center"
-                android:text="@string/get_another_recipe" />
+                android:text="@string/get_another_recipe"
+                android:textAlignment="center" />
         </LinearLayout>
 
         <LinearLayout
@@ -104,6 +105,17 @@
         android:overScrollMode="never"
         app:layout_constraintTop_toTopOf="parent"
         tools:itemCount="20" />
+
+    <aeropresscipe.divinelink.aeropress.customviews.NotificationView
+        android:id="@+id/notification_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="120dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
