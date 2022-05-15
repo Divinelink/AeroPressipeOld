@@ -40,7 +40,7 @@
     <string name="enjoyCoffee">Press and enjoy your coffee!</string>
     <string name="brew">Start Timer</string>
     <string name="resume_brew">Resume Brew</string>
-    <string name="alreadyBrewingDialog">You\'re already brewing\nHold to get a new recipe</string>
+    <string name="alreadyBrewingDialog">You\'re already brewing. Hold to get a new recipe.</string>
     <string name="water_temperature_image">Water Temperature Image</string>
     <string name="beans_weight_image">Beans Weight Image</string>
     <string name="grind_level_image">Grind Level Image</string>
