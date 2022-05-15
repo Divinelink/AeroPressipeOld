@@ -70,5 +70,7 @@
     <string name="action_delete">Delete History</string>
     <string name="deleteHistoryMessage">Are you sure you want to delete your history?</string>
 
+    <string name="consider_adding_to_favourites">Enjoying the recipe?\nConsider adding it to your favorites.</string>
+
 
 </resources>

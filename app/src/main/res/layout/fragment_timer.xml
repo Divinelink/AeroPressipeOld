@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="Enjoying the recipe?\nConsider adding it to your favorites." />
+            android:text="@string/consider_adding_to_favourites" />
 
         <ImageButton
             android:id="@+id/likeRecipeButton"
