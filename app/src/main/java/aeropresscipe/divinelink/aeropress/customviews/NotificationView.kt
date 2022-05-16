@@ -1,7 +1,7 @@
 package aeropresscipe.divinelink.aeropress.customviews
 
 import aeropresscipe.divinelink.aeropress.databinding.ViewNotificationBinding
-import android.app.Activity
+import aeropresscipe.divinelink.aeropress.util.ThreadUtil.runOnMain
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -16,12 +16,11 @@ enum class NotificationLength(val delay: Long) {
     LONG(5000L)
 }
 
-//var myHandler = Handler(Looper.getMainLooper())
 
 class NotificationView : FrameLayout {
     private var binding = ViewNotificationBinding.inflate(LayoutInflater.from(context), this, false)
 
-    private var executor = Executors.newSingleThreadScheduledExecutor()
+    private var timer = Executors.newScheduledThreadPool(1)
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -36,24 +35,30 @@ class NotificationView : FrameLayout {
 
     private fun initUI() {
         binding.notificationRoot.setOnClickListener {
-            executor.shutdownNow()
             binding.notificationRoot.visibility = View.GONE
         }
     }
 
     fun showNotification(@StringRes resId: Int, length: NotificationLength) {
-        executor.shutdownNow()
-        executor = Executors.newSingleThreadScheduledExecutor()
-
-        binding.notificationRoot.visibility = View.VISIBLE
+        binding.notificationRoot.visibility = VISIBLE
         binding.notificationText.text = context.getText(resId)
-        executor.schedule(hideRunnable(), length.delay, TimeUnit.MILLISECONDS)
+
+        scheduleTimer({ runOnMain { hideNotification() } }, length.delay)
     }
 
-    private fun hideRunnable() = Runnable {
+    private fun hideNotification() {
         binding.notificationRoot.visibility = View.GONE
     }
 
+    private inline fun scheduleTimer(crossinline action: () -> Unit, duration: Long) {
+        cancelTimer()
+        timer.schedule({ action() }, duration, TimeUnit.MILLISECONDS)
+    }
+
+    private fun cancelTimer() {
+        timer.shutdownNow()
+        timer = Executors.newScheduledThreadPool(1)
+    }
 
 
     companion object {
