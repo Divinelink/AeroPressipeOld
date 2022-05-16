@@ -27,10 +27,9 @@ class NotificationView : FrameLayout {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context,
         attrs,
         defStyleAttr) {
-        binding.root.let { view ->
-            addView(view)
-            initUI()
-        }
+
+        addView(binding.root)
+        initUI()
     }
 
     private fun initUI() {

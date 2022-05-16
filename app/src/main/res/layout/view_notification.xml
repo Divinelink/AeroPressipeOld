@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/notificationRoot"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/notificationRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/startEndMargin"
-    android:layout_marginEnd="@dimen/startEndMargin">
+    android:layout_marginEnd="@dimen/startEndMargin"
+    android:visibility="invisible"
+    tools:visibility="visible">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
