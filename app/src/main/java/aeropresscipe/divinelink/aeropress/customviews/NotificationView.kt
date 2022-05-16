@@ -45,6 +45,13 @@ class NotificationView : FrameLayout {
         scheduleTimer({ runOnMain { hideNotification() } }, length.delay)
     }
 
+    fun showNotification(text: CharSequence, length: NotificationLength) {
+        binding.notificationRoot.visibility = VISIBLE
+        binding.notificationText.text = text
+
+        scheduleTimer({ runOnMain { hideNotification() } }, length.delay)
+    }
+
     private fun hideNotification() {
         binding.notificationRoot.visibility = View.GONE
     }
