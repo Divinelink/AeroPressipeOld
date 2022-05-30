@@ -16,11 +16,10 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+
 
 import aeropresscipe.divinelink.aeropress.R;
-import aeropresscipe.divinelink.aeropress.customviews.NotificationLength;
-import aeropresscipe.divinelink.aeropress.customviews.NotificationView;
+import aeropresscipe.divinelink.aeropress.customviews.Notification;
 
 public class GenerateRecipeFragment extends Fragment implements GenerateRecipeView {
 
@@ -28,7 +27,6 @@ public class GenerateRecipeFragment extends Fragment implements GenerateRecipeVi
     private LinearLayout generateRecipeButton;
     private LinearLayout timerButton;
     private Button resumeBrewBtn;
-    private NotificationView notificationView;
 
     private Animation mFadeInAnimation;
     private Animation mAdapterAnimation;
@@ -49,7 +47,6 @@ public class GenerateRecipeFragment extends Fragment implements GenerateRecipeVi
         generateRecipeButton = v.findViewById(R.id.generateRecipeButton);
         timerButton = v.findViewById(R.id.startTimerButton);
         resumeBrewBtn = v.findViewById(R.id.resumeBrewButton);
-        notificationView = v.findViewById(R.id.notification_view);
 
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -116,9 +113,7 @@ public class GenerateRecipeFragment extends Fragment implements GenerateRecipeVi
 
     @Override
     public void showIsAlreadyBrewingDialog() {
-//        Toast.makeText(getActivity(), R.string.alreadyBrewingDialog, Toast.LENGTH_SHORT).show();
-//        new NotificationView(requireContext()).showPopupWindow(generateRecipeButton);
-        notificationView.showNotification(R.string.alreadyBrewingDialog, NotificationLength.LONG);
+        Notification.Companion.make(generateRecipeButton, R.string.alreadyBrewingDialog).setAnchorView(R.id.bottom_navigation).show();
     }
 
     @Override
