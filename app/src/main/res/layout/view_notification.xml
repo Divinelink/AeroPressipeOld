@@ -6,9 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/startEndMargin"
-    android:layout_marginEnd="@dimen/startEndMargin"
-    android:visibility="invisible"
-    tools:visibility="visible">
+    android:layout_marginEnd="@dimen/startEndMargin">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

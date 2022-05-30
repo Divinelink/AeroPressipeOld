@@ -5,14 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.annotation.StringRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.BaseTransientBottomBar
 
-class NotificationSnackView(
+class Notification(
     parent: ViewGroup,
     content: NotificationView
-    ) : BaseTransientBottomBar<NotificationSnackView>(parent, content, content) {
+    ) : BaseTransientBottomBar<Notification>(parent, content, content) {
 
     init {
         getView().setBackgroundColor(ContextCompat.getColor(view.context, android.R.color.transparent))
@@ -20,26 +21,27 @@ class NotificationSnackView(
     }
 
     companion object {
-
-        fun make(view: View): NotificationSnackView {
-
+        fun make(view: View, text: CharSequence): Notification {
             // First we find a suitable parent for our custom view
             val parent = view.findSuitableParent() ?: throw IllegalArgumentException(
                 "No suitable parent found from the given view. Please provide a valid view."
             )
 
-            // We inflate our custom view
+            // Inflate the custom view
             val customView = LayoutInflater.from(view.context).inflate(
                 R.layout.custom,
                 parent,
                 false
             ) as NotificationView
 
+            customView.setText(text)
+
             // We create and return our Snackbar
-            return NotificationSnackView(
-                parent,
-                customView
-            )
+            return Notification(parent, customView)
+        }
+
+        fun make(view: View, @StringRes resId: Int): Notification {
+            return make(view, view.resources.getText(resId))
         }
 
     }

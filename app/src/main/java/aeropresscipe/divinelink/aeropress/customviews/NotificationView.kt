@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.StringRes
+import com.google.android.material.snackbar.ContentViewCallback
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -17,8 +18,16 @@ enum class NotificationLength(val delay: Long) {
 }
 
 
-class NotificationView : FrameLayout {
+class NotificationView : FrameLayout, ContentViewCallback {
     private var binding = ViewNotificationBinding.inflate(LayoutInflater.from(context), this, false)
+
+    override fun animateContentIn(delay: Int, duration: Int) {
+        // todo animation
+    }
+
+    override fun animateContentOut(delay: Int, duration: Int) {
+        // todo animation
+    }
 
     private var timer = Executors.newScheduledThreadPool(1)
 
@@ -33,27 +42,35 @@ class NotificationView : FrameLayout {
     }
 
     private fun initUI() {
-        binding.notificationRoot.setOnClickListener {
-            binding.notificationRoot.visibility = View.GONE
-        }
+//        binding.root.setOnClickListener {
+//            binding.root.visibility = View.GONE
+//        }
     }
 
     fun showNotification(@StringRes resId: Int, length: NotificationLength) {
-        binding.notificationRoot.visibility = VISIBLE
+        binding.root.visibility = VISIBLE
         binding.notificationText.text = context.getText(resId)
 
         scheduleTimer({ runOnMain { hideNotification() } }, length.delay)
     }
 
     fun showNotification(text: CharSequence, length: NotificationLength) {
-        binding.notificationRoot.visibility = VISIBLE
+        binding.root.visibility = VISIBLE
         binding.notificationText.text = text
 
         scheduleTimer({ runOnMain { hideNotification() } }, length.delay)
     }
 
+    fun setText(@StringRes resId: Int) {
+        setText(context.getText(resId))
+    }
+
+    fun setText(text: CharSequence) {
+        binding.notificationText.text = text
+    }
+
     private fun hideNotification() {
-        binding.notificationRoot.visibility = View.GONE
+        binding.root.visibility = View.GONE
     }
 
     private inline fun scheduleTimer(crossinline action: () -> Unit, duration: Long) {
@@ -65,7 +82,6 @@ class NotificationView : FrameLayout {
         timer.shutdownNow()
         timer = Executors.newScheduledThreadPool(1)
     }
-
 
     companion object {
         private const val SHORT_DELAY = 3000L
