@@ -72,5 +72,8 @@
 
     <string name="consider_adding_to_favourites">Enjoying the recipe?\nConsider adding it to your favorites.</string>
 
+    <string name="save_recipe_notification">Saved to %s.</string>
+    <string name="remove_recipe_notification">Removed from %s.</string>
+
 
 </resources>
