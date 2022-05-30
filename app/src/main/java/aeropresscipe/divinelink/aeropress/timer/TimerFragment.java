@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import aeropresscipe.divinelink.aeropress.base.BaseApplication;
+import aeropresscipe.divinelink.aeropress.customviews.Notification;
 import aeropresscipe.divinelink.aeropress.generaterecipe.DiceUI;
 
 import androidx.fragment.app.Fragment;
@@ -193,10 +194,13 @@ public class TimerFragment extends Fragment implements TimerView {
     public void addToLiked(final boolean isLiked) {
         if (getActivity() != null) {
             getActivity().runOnUiThread(() -> {
-                if (isLiked)
+                if (isLiked) {
+                    Notification.Companion.make(likeRecipeBtn, getResources().getString(R.string.save_recipe_notification, getString(R.string.favourites))).show();
                     likeRecipeBtn.setImageResource(R.drawable.ic_heart_on);
-                else
+                } else {
+                    Notification.Companion.make(likeRecipeBtn, getResources().getString(R.string.remove_recipe_notification, getString(R.string.favourites))).show();
                     likeRecipeBtn.setImageResource(R.drawable.ic_heart_off);
+                }
             });
         }
     }
