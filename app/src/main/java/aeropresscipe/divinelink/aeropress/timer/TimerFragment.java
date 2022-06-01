@@ -157,15 +157,16 @@ public class TimerFragment extends Fragment implements TimerView {
     public void onResume() {
         super.onResume();
         // if resuming from recipe without bloom isNewRecipe == false
-        if (diceUI.isNewRecipe()) // if it's a new recipe, dont call returnValuesOnResume
+        if (diceUI.isNewRecipe()) { // if it's a new recipe, dont call returnValuesOnResume
             presenter.startBrewing(
                     getPhaseFactory.findPhase(diceUI.getBloomTime(), diceUI.getBrewTime()).getTime(),
                     getPhaseFactory.findPhase(diceUI.getBloomTime(), diceUI.getBrewTime()).getPhase(),
                     getContext());
-        else
+        }
+        else {
             //When resuming, we need to pass the old recipe, not the new one.
             presenter.returnValuesOnResume(getContext());
-
+        }
     }
 
     @Override

@@ -42,9 +42,7 @@ class NotificationView : FrameLayout, ContentViewCallback {
     }
 
     private fun initUI() {
-//        binding.root.setOnClickListener {
-//            binding.root.visibility = View.GONE
-//        }
+        //
     }
 
     fun showNotification(@StringRes resId: Int, length: NotificationLength) {
