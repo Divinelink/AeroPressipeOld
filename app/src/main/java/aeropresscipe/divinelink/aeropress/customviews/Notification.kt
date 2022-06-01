@@ -13,7 +13,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 class Notification(
     parent: ViewGroup,
     content: NotificationView
-    ) : BaseTransientBottomBar<Notification>(parent, content, content) {
+) : BaseTransientBottomBar<Notification>(parent, content, content) {
 
     init {
         getView().setBackgroundColor(ContextCompat.getColor(view.context, android.R.color.transparent))
@@ -43,11 +43,8 @@ class Notification(
         fun make(view: View, @StringRes resId: Int): Notification {
             return make(view, view.resources.getText(resId))
         }
-
     }
-
 }
-
 
 internal fun View?.findSuitableParent(): ViewGroup? {
     var view = this
