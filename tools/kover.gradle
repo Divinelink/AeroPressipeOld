@@ -1,0 +1,12 @@
+//Simply run in terminal or my the gradle task column the kmmsharedmodule:testDebugUnitTest.
+//The report will be shown at $buildDir/kover-coverage-report/html
+tasks.withType(Test) {
+    kover {
+        generateXml = false
+        generateHtml = true
+        coverageEngine = 'INTELLIJ'
+        xmlReportFile.set(file("$buildDir/kover-coverage-report/report.xml"))
+        htmlReportDir.set(file("$buildDir/kover-coverage-report/html"))
+        binaryReportFile.set(file("$buildDir/kover-coverage-report/result.bin"))
+    }
+}
