@@ -24,7 +24,7 @@
             android:padding="8dp"
             android:textAlignment="center"
             android:textColor="@color/colorAccent"
-            android:textSize="16sp"
+            android:textSize="@dimen/Body_Normal_Importance"
             tools:text="@string/alreadyBrewingDialog" />
 
     </androidx.cardview.widget.CardView>
