@@ -7,11 +7,14 @@ import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import aeropresscipe.divinelink.aeropress.base.BaseApplication;
+import aeropresscipe.divinelink.aeropress.customviews.Notification;
 import aeropresscipe.divinelink.aeropress.generaterecipe.DiceUI;
-import androidx.annotation.Nullable;
+
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -19,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,79 +34,33 @@ import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 public class TimerFragment extends Fragment implements TimerView {
 
-    private TextView timerTextView, notificationTextView;
+    private TextView timerTextView;
+    private TextView notificationTextView;
     private LinearLayout mLikeRecipeLayout;
     private MaterialProgressBar progressBar;
     private ImageButton likeRecipeBtn;
 
-    private TimerPresenter presenter;
-
     private int secondsRemaining = 0;
 
     private DiceUI diceUI;
+    private TimerPresenter presenter;
 
     private final GetPhaseFactory getPhaseFactory = new GetPhaseFactory();
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_timer, container, false);
 
-        diceUI = getArguments().getParcelable("timer");
-
-        timerTextView = (TextView) v.findViewById(R.id.savedTimeTV);
-        progressBar = (MaterialProgressBar) v.findViewById(R.id.progressBar);
-        notificationTextView = (TextView) v.findViewById(R.id.notificationTV);
-        likeRecipeBtn = (ImageButton) v.findViewById(R.id.likeRecipeButton);
-        mLikeRecipeLayout = (LinearLayout) v.findViewById(R.id.likeRecipeLayout);
-
-        likeRecipeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.saveLikedRecipeOnDB(getContext());
-            }
-        });
-
-        //FIXME move it somewhere else
-        likeRecipeBtn.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    AnimatorSet reducer = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.reduce_size);
-                    reducer.setTarget(view);
-                    reducer.start();
-
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    AnimatorSet regainer = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.regain_size);
-                    regainer.setTarget(view);
-                    regainer.start();
-                }
-                return false;
-            }
-        });
-
+        if (getArguments() != null) {
+            diceUI = (DiceUI) getArguments().getSerializable("timer");
+        }
 
         presenter = new TimerPresenterImpl(this);
-
+        initViews(v);
+        initListeners();
         return v;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    public static TimerFragment newInstance(DiceUI diceUI) {
-
-        TimerFragment fragment = new TimerFragment();
-        Bundle args = new Bundle();
-        args.putParcelable("timer", diceUI);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void showTimer(final int time, boolean bloomPhase) {
@@ -132,7 +90,7 @@ public class TimerFragment extends Fragment implements TimerView {
                 .start();
     }
 
-    Handler timerHandler = new Handler();
+    Handler timerHandler = new Handler(Looper.getMainLooper());
     Runnable bloomRunnable = new Runnable() {
         @Override
         public void run() {
@@ -191,10 +149,7 @@ public class TimerFragment extends Fragment implements TimerView {
         } else {
             // When leaving Timer and it is over, set isBrewing boolean to false, meaning that brewing process is over
             // which removes the resume button on Generate Recipe Fragment.
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean("isBrewing", false);
-            editor.apply();
+            BaseApplication.sharedPreferences.setBrewing(false);
         }
     }
 
@@ -202,15 +157,16 @@ public class TimerFragment extends Fragment implements TimerView {
     public void onResume() {
         super.onResume();
         // if resuming from recipe without bloom isNewRecipe == false
-        if (diceUI.isNewRecipe()) // if it's a new recipe, dont call returnValuesOnResume
+        if (diceUI.isNewRecipe()) { // if it's a new recipe, dont call returnValuesOnResume
             presenter.startBrewing(
                     getPhaseFactory.findPhase(diceUI.getBloomTime(), diceUI.getBrewTime()).getTime(),
                     getPhaseFactory.findPhase(diceUI.getBloomTime(), diceUI.getBrewTime()).getPhase(),
                     getContext());
-        else
+        }
+        else {
             //When resuming, we need to pass the old recipe, not the new one.
             presenter.returnValuesOnResume(getContext());
-
+        }
     }
 
     @Override
@@ -237,16 +193,14 @@ public class TimerFragment extends Fragment implements TimerView {
 
     @Override
     public void addToLiked(final boolean isLiked) {
-
         if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (isLiked)
-                        likeRecipeBtn.setImageResource(R.drawable.ic_heart_on);
-                    else
-                        likeRecipeBtn.setImageResource(R.drawable.ic_heart_off);
+            getActivity().runOnUiThread(() -> {
+                if (isLiked) {
+                    Notification.Companion.make(likeRecipeBtn, getResources().getString(R.string.save_recipe_notification, getString(R.string.favourites))).show();
+                    likeRecipeBtn.setImageResource(R.drawable.ic_heart_on);
+                } else {
+                    Notification.Companion.make(likeRecipeBtn, getResources().getString(R.string.remove_recipe_notification, getString(R.string.favourites))).show();
+                    likeRecipeBtn.setImageResource(R.drawable.ic_heart_off);
                 }
             });
         }
@@ -256,5 +210,41 @@ public class TimerFragment extends Fragment implements TimerView {
         ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationY", value);
         animation.setDuration(1000);
         animation.start();
+    }
+
+    private void initViews(View v) {
+        timerTextView = (TextView) v.findViewById(R.id.savedTimeTV);
+        progressBar = (MaterialProgressBar) v.findViewById(R.id.progressBar);
+        notificationTextView = (TextView) v.findViewById(R.id.notificationTV);
+        likeRecipeBtn = (ImageButton) v.findViewById(R.id.likeRecipeButton);
+        mLikeRecipeLayout = (LinearLayout) v.findViewById(R.id.likeRecipeLayout);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void initListeners() {
+        likeRecipeBtn.setOnClickListener(view -> presenter.saveLikedRecipeOnDB(getContext()));
+
+        likeRecipeBtn.setOnTouchListener((view, motionEvent) -> {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                AnimatorSet reducer = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.reduce_size);
+                reducer.setTarget(view);
+                reducer.start();
+
+            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                AnimatorSet regainer = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.regain_size);
+                regainer.setTarget(view);
+                regainer.start();
+            }
+            return false;
+        });
+    }
+
+    public static TimerFragment newInstance(DiceUI diceUI) {
+
+        TimerFragment fragment = new TimerFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("timer", diceUI);
+        fragment.setArguments(args);
+        return fragment;
     }
 }
