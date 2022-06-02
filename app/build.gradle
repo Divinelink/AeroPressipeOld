@@ -1,5 +1,14 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'io.gitlab.arturbosch.detekt'
+}
+
+apply {
+    from '../tools/detekt-checks.gradle'
+    from '../tools/git-hooks.gradle'
+//    from '../tools/kover.gradle'
+}
 
 android {
     compileSdkVersion 32
@@ -18,8 +27,15 @@ android {
         }
     }
 
-    viewBinding {
-        enabled true
+    buildFeatures {
+        viewBinding true
+    }
+
+    android {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_11
+            targetCompatibility JavaVersion.VERSION_11
+        }
     }
 }
 

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import aeropresscipe.divinelink.aeropress.base.HomeView;
 import aeropresscipe.divinelink.aeropress.generaterecipe.DiceUI;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
@@ -27,7 +26,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class SavedRecipesFragment extends Fragment implements SavedRecipesView {
 
-
     private SavedRecipesPresenter presenter;
     private HomeView homeView;
 
@@ -45,18 +43,15 @@ public class SavedRecipesFragment extends Fragment implements SavedRecipesView {
 
         View v = inflater.inflate(R.layout.fragment_saved_recipes, container, false);
 
-        homeView = (HomeView) getArguments().getSerializable("home_view");
+        if (getArguments() != null) {
+            homeView = (HomeView) getArguments().getSerializable("home_view");
+        }
 
         savedRecipesRV = (RecyclerView) v.findViewById(R.id.savedRecipesRV);
         mToolBar = (Toolbar) v.findViewById(R.id.toolbar);
         mEmptyListLL = (LinearLayout) v.findViewById(R.id.emptyListLayout);
 
-        mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().onBackPressed();
-            }
-        });
+        mToolBar.setNavigationOnClickListener(v1 -> getActivity().onBackPressed());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         savedRecipesRV.setLayoutManager(layoutManager);
@@ -67,10 +62,6 @@ public class SavedRecipesFragment extends Fragment implements SavedRecipesView {
         return v;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     public static SavedRecipesFragment newInstance(HomeView homeView) {
 

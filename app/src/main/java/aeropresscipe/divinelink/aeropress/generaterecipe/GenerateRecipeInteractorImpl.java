@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import aeropresscipe.divinelink.aeropress.base.BaseApplication;
 import aeropresscipe.divinelink.aeropress.base.HomeDatabase;
 
 public class GenerateRecipeInteractorImpl implements GenerateRecipeInteractor, SharedPrefManager {
@@ -31,32 +32,22 @@ public class GenerateRecipeInteractorImpl implements GenerateRecipeInteractor, S
         if (isBrewing) {
             listener.isAlreadyBrewing();
         } else {
-            AsyncTask.execute(new Runnable() {
-                @Override
-                public void run() {
-                    final RecipeDao recipeDao = HomeDatabase.getDatabase(ctx).recipeDao();
+            AsyncTask.execute(() -> {
+                final RecipeDao recipeDao = HomeDatabase.getDatabase(ctx).recipeDao();
 
-                    final DiceDomain newRecipe = new GenerateRecipe().getFinalRecipe();
+                final DiceDomain newRecipe = new GenerateRecipe().getFinalRecipe();
 
-                    // When Using AsyncTask, we also need to use .runOnUiThread(new Runnable()) where we set the adapter
-                    // That updates the UI. In this case, on the fragment, on showRecipe() method.
+                // When Using AsyncTask, we also need to use .runOnUiThread(new Runnable()) where we set the adapter
+                // That updates the UI. In this case, on the fragment, on showRecipe() method.
 
-                    // Stuff that updates the UI
-                    Log.d("getNewRecipe", "Get New Recipe Button, updates DB and creates new recipe");
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            recipeDao.updateRecipe(newRecipe);
-                            listener.onSuccessNewRecipe(newRecipe);
-                        }
-                    });
+                // Stuff that updates the UI
+                Log.d("getNewRecipe", "Get New Recipe Button, updates DB and creates new recipe");
+                AsyncTask.execute(() -> {
+                    recipeDao.updateRecipe(newRecipe);
+                    listener.onSuccessNewRecipe(newRecipe);
+                });
 
-                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putBoolean("isBrewing", false);
-
-                    editor.apply();
-                }
+                BaseApplication.sharedPreferences.setBrewing(false);
             });
         }
     }
@@ -66,39 +57,30 @@ public class GenerateRecipeInteractorImpl implements GenerateRecipeInteractor, S
 
         final boolean isBrewing = IsItBrewingAlready(ctx);
 
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                final RecipeDao recipeDao = HomeDatabase.getDatabase(ctx).recipeDao();
-                final DiceDomain recipe = recipeDao.getSingleRecipe();
+        AsyncTask.execute(() -> {
+            final RecipeDao recipeDao = HomeDatabase.getDatabase(ctx).recipeDao();
+            final DiceDomain recipe = recipeDao.getSingleRecipe();
 
-                if (recipe == null) {
-                    // If it's the first time we run the app, there's no recipe. We generate a new one using the getRandomRecipe() method
+            if (recipe == null) {
+                // If it's the first time we run the app, there's no recipe. We generate a new one using the getRandomRecipe() method
 
-                    final DiceDomain newRecipe = new GenerateRecipe().getFinalRecipe();
+                final DiceDomain newRecipe = new GenerateRecipe().getFinalRecipe();
 
-                    // When DB is empty, meaning it has no recipe, it automatically saves the current recipe on the DB
-                    // And we show it on the fragment.
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d("getRecipe", "Creates New Recipe when app starts and there's no recipe available.");
-                            recipeDao.updateRecipe(newRecipe);
-                            listener.onSuccessAppStarts(newRecipe);
-                        }
-                    });
-                } else {
-                    Log.d("Show Recipe", "Show already existing recipe");
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (isBrewing) // When there's a timer active and app is starting
-                                listener.onSuccess(recipe);
-                            else // When there's no timer active and app is starting
-                                listener.onSuccessAppStarts(recipe);
-                        }
-                    });
-                }
+                // When DB is empty, meaning it has no recipe, it automatically saves the current recipe on the DB
+                // And we show it on the fragment.
+                AsyncTask.execute(() -> {
+                    Log.d("getRecipe", "Creates New Recipe when app starts and there's no recipe available.");
+                    recipeDao.updateRecipe(newRecipe);
+                    listener.onSuccessAppStarts(newRecipe);
+                });
+            } else {
+                Log.d("Show Recipe", "Show already existing recipe");
+                AsyncTask.execute(() -> {
+                    if (isBrewing) // When there's a timer active and app is starting
+                        listener.onSuccess(recipe);
+                    else // When there's no timer active and app is starting
+                        listener.onSuccessAppStarts(recipe);
+                });
             }
         });
     }
@@ -106,9 +88,6 @@ public class GenerateRecipeInteractorImpl implements GenerateRecipeInteractor, S
 
     @Override
     public boolean IsItBrewingAlready(Context ctx) {
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
-        return preferences.getBoolean("isBrewing", false);
-
+        return BaseApplication.sharedPreferences.isBrewing();
     }
 }

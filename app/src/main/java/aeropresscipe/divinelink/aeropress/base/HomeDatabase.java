@@ -16,7 +16,7 @@ import androidx.room.TypeConverters;
 
 @Database(entities = {DiceDomain.class, SavedRecipeDomain.class, HistoryDomain.class}, version = 10, exportSchema = false)
 @TypeConverters(Converters.class)
-abstract public class HomeDatabase extends RoomDatabase {
+public abstract class HomeDatabase extends RoomDatabase {
 
     public abstract RecipeDao recipeDao();
 
@@ -24,7 +24,7 @@ abstract public class HomeDatabase extends RoomDatabase {
 
     public abstract HistoryDao historyDao();
 
-    static private HomeDatabase INSTANCE;
+    private static HomeDatabase INSTANCE;
 
     public static HomeDatabase getDatabase(Context ctx) {
         if (INSTANCE == null) {

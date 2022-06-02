@@ -40,7 +40,7 @@
     <string name="enjoyCoffee">Press and enjoy your coffee!</string>
     <string name="brew">Start Timer</string>
     <string name="resume_brew">Resume Brew</string>
-    <string name="alreadyBrewingDialog">You\'re already brewing\nHold to get a new recipe</string>
+    <string name="alreadyBrewingDialog">You\'re already brewing. Hold to get a new recipe.</string>
     <string name="water_temperature_image">Water Temperature Image</string>
     <string name="beans_weight_image">Beans Weight Image</string>
     <string name="grind_level_image">Grind Level Image</string>
@@ -69,6 +69,11 @@
 
     <string name="action_delete">Delete History</string>
     <string name="deleteHistoryMessage">Are you sure you want to delete your history?</string>
+
+    <string name="consider_adding_to_favourites">Enjoying the recipe?\nConsider adding it to your favorites.</string>
+
+    <string name="save_recipe_notification">Saved to %s.</string>
+    <string name="remove_recipe_notification">Removed from %s.</string>
 
 
 </resources>

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,71 +16,38 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+
 
 import aeropresscipe.divinelink.aeropress.R;
+import aeropresscipe.divinelink.aeropress.customviews.Notification;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link GenerateRecipeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class GenerateRecipeFragment extends Fragment implements GenerateRecipeView {
 
+    private RecyclerView recipeRv;
+    private LinearLayout generateRecipeButton;
+    private LinearLayout timerButton;
+    private Button resumeBrewBtn;
 
-    RecyclerView recipeRv;
-    LinearLayout generateRecipeButton, timerButton;
-    Button resumeBrewBtn;
-
-    private Animation mFadeInAnimation, mAdapterAnimation;
+    private Animation mFadeInAnimation;
+    private Animation mAdapterAnimation;
     private GenerateRecipePresenter presenter;
-    HomeView homeView;
-    DiceUI diceUI;
+    private HomeView homeView;
+    private DiceUI diceUI;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_generate_recipe, container, false);
 
-        homeView = (HomeView) getArguments().getSerializable("home_view");
+        if (getArguments() != null) {
+            homeView = (HomeView) getArguments().getSerializable("home_view");
+        }
         recipeRv = v.findViewById(R.id.recipe_rv);
         generateRecipeButton = v.findViewById(R.id.generateRecipeButton);
         timerButton = v.findViewById(R.id.startTimerButton);
         resumeBrewBtn = v.findViewById(R.id.resumeBrewButton);
 
-
-        generateRecipeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.getNewRecipe(getContext(), false);
-            }
-        });
-
-        generateRecipeButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                presenter.getNewRecipe(getContext(), true);
-                return true;
-            }
-        });
-
-        timerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                diceUI.setNewRecipe(true);
-                homeView.startTimerActivity(diceUI);
-            }
-        });
-
-        resumeBrewBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                diceUI.setNewRecipe(false);
-                homeView.startTimerActivity(diceUI);
-            }
-        });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recipeRv.setLayoutManager(layoutManager);
@@ -88,22 +56,32 @@ public class GenerateRecipeFragment extends Fragment implements GenerateRecipeVi
         presenter.getRecipe(getContext());
         mFadeInAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.initiliaze_animation);
 
+        initListeners();
 
         return v;
     }
 
-    public static GenerateRecipeFragment newInstance(HomeView homeView) {
+    private void initListeners() {
+        generateRecipeButton.setOnClickListener(view -> presenter.getNewRecipe(getContext(), false));
 
-        Bundle args = new Bundle();
-        GenerateRecipeFragment fragment = new GenerateRecipeFragment();
-        args.putSerializable("home_view", homeView);
-        fragment.setArguments(args);
-        return fragment;
+        generateRecipeButton.setOnLongClickListener(view -> {
+            presenter.getNewRecipe(getContext(), true);
+            return true;
+        });
+
+        timerButton.setOnClickListener(view -> {
+            diceUI.setNewRecipe(true);
+            homeView.startTimerActivity(diceUI);
+        });
+
+        resumeBrewBtn.setOnClickListener(view -> {
+            diceUI.setNewRecipe(false);
+            homeView.startTimerActivity(diceUI);
+        });
     }
 
     @Override
     public void showRecipe(final DiceDomain randomRecipe) {
-
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 final GenerateRecipeRvAdapter recipeRvAdapter = new GenerateRecipeRvAdapter(randomRecipe, getActivity());
@@ -112,11 +90,13 @@ public class GenerateRecipeFragment extends Fragment implements GenerateRecipeVi
                 public void run() {
                     recipeRv.setAdapter(recipeRvAdapter);
                     if (!mFadeInAnimation.hasEnded()) {
-                        try { //FIXME Maybe this isn't the best solution. Basically, there's a problem where if you're using Fragment Transition animation, and you also want to load the following animation on the button, app crashes.
+                        try {
+                            //FIXME Maybe this isn't the best solution. Basically, there's a problem where if you're using Fragment Transition animation, and you also want to load the following animation on the button, app crashes.
                             //So I used this try catch method and app waits until UI loads.
                             //This happens because, getContext() is null since there are parts of the lifecycle where this will return null.
                             mFadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in_out);
                         } catch (Exception ignore) {
+                            // do nothing
                         }
                         resumeBrewBtn.startAnimation(mFadeInAnimation);
                     }
@@ -133,7 +113,7 @@ public class GenerateRecipeFragment extends Fragment implements GenerateRecipeVi
 
     @Override
     public void showIsAlreadyBrewingDialog() {
-        Toast.makeText(getActivity(), R.string.alreadyBrewingDialog, Toast.LENGTH_SHORT).show();
+        Notification.Companion.make(generateRecipeButton, R.string.alreadyBrewingDialog).setAnchorView(R.id.bottom_navigation).show();
     }
 
     @Override
@@ -144,17 +124,11 @@ public class GenerateRecipeFragment extends Fragment implements GenerateRecipeVi
 
                 @Override
                 public void run() {
-
                     mAdapterAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.adapter_anim);
                     recipeRv.startAnimation(mAdapterAnimation);
                     // We need this so the adapter changes during the animation phase, and not before it.
-                    Handler adapterHandler = new Handler();
-                    Runnable adapterRunnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            recipeRv.setAdapter(recipeRvAdapter);
-                        }
-                    };
+                    Handler adapterHandler = new Handler(Looper.getMainLooper());
+                    Runnable adapterRunnable = () -> recipeRv.setAdapter(recipeRvAdapter);
 
                     adapterHandler.postDelayed(adapterRunnable, mAdapterAnimation.getDuration());
 
@@ -170,7 +144,6 @@ public class GenerateRecipeFragment extends Fragment implements GenerateRecipeVi
 
     @Override
     public void showRecipeAppStarts(final DiceDomain randomRecipe) {
-
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 final GenerateRecipeRvAdapter recipeRvAdapter = new GenerateRecipeRvAdapter(randomRecipe, getActivity());
@@ -178,12 +151,19 @@ public class GenerateRecipeFragment extends Fragment implements GenerateRecipeVi
                 @Override
                 public void run() {
                     recipeRv.setAdapter(recipeRvAdapter);
-                    //         mFadeInAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.initiliaze_animation);
                     if (mFadeInAnimation == null)
                         mFadeInAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.initiliaze_animation);
                     resumeBrewBtn.startAnimation(mFadeInAnimation);
                 }
             });
         }
+    }
+
+    public static GenerateRecipeFragment newInstance(HomeView homeView) {
+        Bundle args = new Bundle();
+        GenerateRecipeFragment fragment = new GenerateRecipeFragment();
+        args.putSerializable("home_view", homeView);
+        fragment.setArguments(args);
+        return fragment;
     }
 }
